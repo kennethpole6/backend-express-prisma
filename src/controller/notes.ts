@@ -4,13 +4,18 @@ import createHttpError from "http-errors";
 const prisma = new PrismaClient();
 
 interface NotesBody {
-    title: string
-    description?: string
+    userId: number;
+    title: string;
+    description?: string;
 }
 
 export const getNotes: RequestHandler = async (req, res, next) => {
     try {
-        const notes = await prisma.notes.findMany()
+        const notes = await prisma.notes.findMany({
+            include: {
+                User: true
+            }
+        })
         res.status(200).json(notes)
     } catch (error) {
         next(error)
@@ -36,7 +41,8 @@ export const getNotesId: RequestHandler = async (req, res, next) => {
     }
 }
 
-export const createNotes: RequestHandler<unknown, unknown, NotesBody ,unknown> = async (req, res, next) => {
+export const createNotes: RequestHandler<unknown, unknown, NotesBody, unknown> = async (req, res, next) => {
+    const userId = req.body.userId
     const title = req.body.title
     const description = req.body.description
 
@@ -47,6 +53,7 @@ export const createNotes: RequestHandler<unknown, unknown, NotesBody ,unknown> =
 
         const notes = await prisma.notes.create({
             data: {
+                userId,
                 title,
                 description
             }

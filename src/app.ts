@@ -6,6 +6,8 @@ import cors from "cors"
 import env from "./utils/validateEnv"
 import noteRoutes from "./routes/notes"
 import userRoutes from "./routes/users"
+import loginRoutes from "./routes/auth"
+import { verifyToken } from "./middleware/verifyToken"
 
 const app = express()
 const port = env.PORT
@@ -18,8 +20,11 @@ app.get("/", (req, res) => {
     res.send("Connected...")
 })
 
-app.use("/api/notes", noteRoutes)
-app.use("/api/users", userRoutes)
+
+//routes
+app.use("/api/login", loginRoutes)
+app.use("/api/notes", verifyToken, noteRoutes)
+app.use("/api/users", verifyToken, userRoutes)
 
 app.listen(port, () => {
     console.log("Server is running on port " + port)
