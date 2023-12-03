@@ -59,7 +59,7 @@ export const createUsers: RequestHandler<
     if (existedEmail) {
       throw createHttpError(400, "Email already exists...");
     }
-    const hashPassword = hashSync(password, 8);
+    const hashPassword = await hashSync(password, 8);
 
     const user = await prisma.user.create({
       data: {
@@ -83,6 +83,8 @@ export const updateUsers: RequestHandler = async (req, res, next) => {
       throw createHttpError(400, "Id is required");
     }
 
+    const hashPassword = await hashSync(password, 8);
+
     const updatedUsers = await prisma.user.update({
       where: {
         id: Number(id),
@@ -90,7 +92,7 @@ export const updateUsers: RequestHandler = async (req, res, next) => {
       data: {
         name,
         email,
-        password: hashSync(password, 8),
+        password: hashPassword,
       },
     });
 
