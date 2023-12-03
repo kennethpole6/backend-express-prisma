@@ -4,6 +4,7 @@ import morgan from "morgan";
 import createHttpError, { isHttpError } from "http-errors";
 import cors from "cors";
 import env from "./utils/validateEnv";
+import cookieParser from "cookie-parser";
 import noteRoutes from "./routes/notes";
 import userRoutes from "./routes/users";
 import loginRoutes from "./routes/auth";
@@ -14,6 +15,7 @@ const port = env.PORT;
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {

@@ -39,10 +39,16 @@ export const login: RequestHandler = async (req, res, next) => {
       email: user.email,
     };
 
-    const accessToken = generateToken(payload);
-    res.status(200).json({
-      token: accessToken,
+    const token = await generateToken(payload);
+
+    //implementing httponly cookie
+    await res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 15,
+      secure: true,
     });
+
+    res.status(200).json({ token });
   } catch (error) {
     next(error);
   }
