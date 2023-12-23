@@ -12,9 +12,26 @@ interface UsersBody {
 }
 
 export const getUsers: RequestHandler = async (req, res, next) => {
+  const { page, limit } = req.query;
+
   try {
-    const users = await prisma.user.findMany();
-    res.status(200).json(users);
+    const users = await prisma.user.findMany({
+      ...(page &&
+        limit && { skip: Number(page) * Number(limit), take: Number(limit) }),
+    });
+    //pagination
+    const pageSize = await prisma.user.count();
+    const meta = {
+      currentPage: Number(page),
+      perPage: Number(limit),
+      total: pageSize,
+    };
+
+    const response = {
+      data: users,
+      meta,
+    };
+    res.status(200).json(response);
   } catch (error) {
     next(error);
   }
