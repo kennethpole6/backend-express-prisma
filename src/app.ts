@@ -9,6 +9,8 @@ import noteRoutes from "./routes/notes";
 import userRoutes from "./routes/users";
 import loginRoutes from "./routes/auth";
 import { verifyToken } from "./middleware/verifyToken";
+import { loginSchema } from "./utils/schema/loginSchema";
+import { validateRequest } from "zod-express-middleware";
 
 const app = express();
 const port = env.PORT;
@@ -23,7 +25,7 @@ app.get("/", (req, res) => {
 });
 
 //routes
-app.use("/api/login", loginRoutes);
+app.use("/api/login", validateRequest({ body: loginSchema }), loginRoutes);
 app.use("/api/notes", verifyToken, noteRoutes);
 app.use("/api/users", verifyToken, userRoutes);
 
