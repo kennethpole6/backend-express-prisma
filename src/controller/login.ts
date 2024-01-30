@@ -11,10 +11,6 @@ export const login: RequestHandler = async (req, res, next) => {
   const password = req.body.password;
 
   try {
-    //if no email or password provided
-    if (!email || !password) {
-      throw createHttpError(400, "Parameters missing...");
-    }
     //check if user exists
     const user = await prisma.user.findUnique({
       where: {

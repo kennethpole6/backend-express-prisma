@@ -9,8 +9,8 @@ import noteRoutes from "./routes/notes";
 import userRoutes from "./routes/users";
 import loginRoutes from "./routes/auth";
 import { verifyToken } from "./middleware/verifyToken";
+import { validateRequestBody } from "zod-express-middleware";
 import { loginSchema } from "./utils/schema/loginSchema";
-import { validateRequest } from "zod-express-middleware";
 
 const app = express();
 const port = env.PORT;
@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 });
 
 //routes
-app.use("/api/login", validateRequest({ body: loginSchema }), loginRoutes);
+app.use("/api/login", validateRequestBody(loginSchema), loginRoutes);
 app.use("/api/notes", verifyToken, noteRoutes);
 app.use("/api/users", verifyToken, userRoutes);
 
@@ -43,6 +43,7 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   console.error(error);
   let errorMessage = "An unknown error occurred";
   let statusCode = 500;
+
   if (isHttpError(error)) {
     statusCode = error.status;
     errorMessage = error.message;
